@@ -1,7 +1,10 @@
 <script setup>
-import { reactive, defineEmits, computed } from 'vue';
+import { reactive } from 'vue';
+import AlertasMensaje from './AlertasMensaje.vue';
+
+const emit = defineEmits(['update:producto', 'update:precio', 'agregar-producto'])
 const props = defineProps({
-    nombre: {
+    producto: {
         type: String,
         required: true
     },
@@ -11,48 +14,55 @@ const props = defineProps({
     }
 })
 
-    defineEmits(['update:nombre', 'update:precio'])
+const errores = reactive({
+    mensaje: '',
+    tipo: ''
+})
 
-
-    const alerta = reactive({
-        tipo: '',
-        mensaje: ''
-    })
-
-    const validarFormulario = () => {
-        if(Object.values(props).includes('')) {
-            alerta.mensaje = 'Todos los campos son obligatorios'
-            alerta.tipo = 'error'
-            return;
-        }
+const mandarInfo = () => {
+    if (props.producto === "" || props.precio === "") {
+        errores.mensaje = 'Es obligatorio llenar todos los campos'
+        errores.tipo = 'error'
+        return
+    } else {
+        errores.mensaje = 'Enviado con exito'
     }
+}
+
+
 
 </script>
 
+
 <template>
-    
-    <form class="shadow-md bg-orange-500 p-5 my-10 rounded-xl h-full flex- flex-col" @submit.prevent="validarFormulario">
-        <div class="flex flex-col mb-5">
-            <label class="text-lg font-bold" for="">Nombre del producto:</label>
-            <input 
-            class="p-2 rounded-xl" type="text" placeholder="Ingrese el nombre del producto"
-            @input="$emit('update:nombre', $event.target.value)"
-            :value="nombre"
-            >
+    <form 
+        action=""
+        class=" bg-orange-600 w-1/2 container m-auto rounded-2xl p-5 mx-10" 
+        @submit.prevent="mandarInfo"
+        @submit="$emit('agregar-producto')"
+        >
+        
+        <AlertasMensaje :mensaje="errores.mensaje" :tipo="errores.tipo" v-if="errores.mensaje"/>
+
+        <div class="flex flex-col mt-5">
+            <label for="" class="text-lg font-semibold">
+                Producto:</label>
+
+            <input class="p-2 rounded-md" type="text" placeholder="Ingrese el producto"
+                @input="$emit('update:producto', $event.target.value)">
         </div>
 
-        <div class="flex flex-col">
-            <label class="text-lg font-bold" for="">Precio del producto:</label>
-            <input 
-            class="p-2 rounded-xl" type="text" placeholder="Ingrese el precio del producto"
-            @input="$emit('update:precio', $event.target.value)"  
-            :value="precio"
-            >
+
+        <div class="flex flex-col mt-5">
+            <label for="" class="text-lg font-semibold">
+                Costo del producto:</label>
+
+
+            <input class="p-2 rounded-md" type="text" placeholder="Ingrese el costo del producto"
+                @input="$emit('update:precio', $event.target.value)">
         </div>
 
-        <input type="submit" value="Enviar" class="bg-white py-2 px-10 rounded-xl mt-8 text-lg font-bold">
-
+        <input type="submit" class="m-auto mt-9 rounded-2xl bg-white px-4 py-2 font-bold">
     </form>
-    <div class="bg-red-500 rounded-xl text-center">{{ alerta.mensaje }}</div>
 </template>
 
